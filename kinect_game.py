@@ -42,7 +42,7 @@ def draw_skeleton(skeleton):
         if joint.x != 0 and joint.y != 0 and joint.z != 0:  # Verificar que la articulación esté dentro del campo de visión
             x = int(joint.x * WINDOW_SIZE[0])
             y = int(joint.y * WINDOW_SIZE[1])
-            pygame.draw.circle(screen, SKELETON_COLOR, (x+320, -1*y+100), JOINT_RADIUS)
+            pygame.draw.circle(screen, SKELETON_COLOR, (x + 320, -1 * y + 100), JOINT_RADIUS)
             print(f"Joint ID: {joint_id}, Posición: ({x}, {y})")
 
     # Dibujar las conexiones entre articulaciones
@@ -99,7 +99,6 @@ def main():
     # Obtener la ventana de Pygame y moverla a la esquina superior izquierda
     window = gw.getWindowsWithTitle('Juego Kinect con Python')[0]
     window.moveTo(0, 0)  # Mover la ventana a la esquina superior izquierda de la pantalla
-    screen.fill(pygame.color.THECOLORS["black"])
 
     print("Inicializando Kinect...")
     with nui.Runtime() as kinect:
@@ -109,7 +108,6 @@ def main():
         
         kinect.skeleton_frame_ready += post_frame
         
-
         # Bucle principal del juego
         while True:
             event = pygame.event.wait()
@@ -119,10 +117,11 @@ def main():
                 break
             elif event.type == KINECTEVENT:
                 print("Frame del esqueleto recibido.")
-                # Procesar los datos del esqueleto
+                # Limpiar la pantalla antes de dibujar el esqueleto
                 pass
 
             pygame.display.flip()
+            screen.fill(pygame.color.THECOLORS["black"])
 
 
 if __name__ == '__main__':
