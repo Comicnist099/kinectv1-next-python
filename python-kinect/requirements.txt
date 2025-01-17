@@ -1,0 +1,17 @@
+anaconda instalar
+
+-usar la version 3.6 dfe python 
+-descargar de esta liga la compatibilidad con pykinect
+https://github.com/shrirangkadam/pykinect-python3.6/tree/master
+
+necesaria si no funciona el cv 
+conda install -c conda-forge opencv=3.2.0
+conda install -c cogsci pygame
+conda install -c conda-forge freenect
+
+////SERVIDOR
+
+pip install ws4py cherrypy
+
+pygame
+pykinect

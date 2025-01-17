@@ -41,19 +41,23 @@ class KinectGame(object):
         self.running = True
         self.current_skeletons = []
         self.ws_client = None
+        self.last_sent_time = time.time()  # Tiempo del último envío
 
     def send_joints(self, joints_data):
-        if self.ws_client and not self.ws_client.client_terminated:
-            try:
-                self.ws_client.send(json.dumps(joints_data))  # Enviar los datos de los joints como JSON
-            except Exception as e:
-                print("Error al enviar datos: %s" % e)
-                traceback.print_exc()
-        elif self.ws_client is None:
-            pass  # El cliente WebSocket no existe, no hace nada
-        else:
-            print("Cliente WebSocket está terminado. Reconectando...")
-            self.initialize_websocket()
+        current_time = time.time()
+        if current_time - self.last_sent_time >= 0:  # Solo enviar si ha pasado 1 segundo
+            if self.ws_client and not self.ws_client.client_terminated:
+                try:
+                    self.ws_client.send(json.dumps(joints_data))  # Enviar los datos de los joints como JSON
+                    self.last_sent_time = current_time  # Actualizar el tiempo de envío
+                except Exception as e:
+                    print("Error al enviar datos: %s" % e)
+                    traceback.print_exc()
+            elif self.ws_client is None:
+                pass  # El cliente WebSocket no existe, no hace nada
+            else:
+                print("Cliente WebSocket está terminado. Reconectando...")
+                self.initialize_websocket()
 
     def initialize_websocket(self):
         try:
@@ -82,7 +86,8 @@ class KinectGame(object):
                 )
                 
                 # Enviar los datos de las articulaciones del primer esqueleto detectado
-                joints_data = self.get_joints_data(skeletons[0])
+                joints_data = self.get_joints_data(skeletons[0], joints_to_send=[2, 3])
+
                 self.send_joints(joints_data)
             else:
                 current_time = time.time()
@@ -97,14 +102,19 @@ class KinectGame(object):
             print("Error en post_frame: {0}".format(e))
             traceback.print_exc()
 
-    def get_joints_data(self, skeleton):
+    def get_joints_data(self, skeleton, joints_to_send=None):
+        if joints_to_send is None:
+            joints_to_send = [2, 3]  # Si no se pasa, por defecto se envían los joints 2 y 3.
+
         joints_data = {}
         for joint_id, joint in enumerate(skeleton.SkeletonPositions):
-            if joint.x != 0 and joint.y != 0 and joint.z != 0:
+            if joint_id in joints_to_send and joint.x != 0 and joint.y != 0 and joint.z != 0:
                 x = int(joint.x * self.WINDOW_SIZE[0]) + self.WINDOW_SIZE[0] // 2
                 y = int(-joint.y * self.WINDOW_SIZE[1]) + self.WINDOW_SIZE[1] // 2
-                joints_data["joint_{0}".format(joint_id)] = {"x": x, "y": y, "z": joint.z}
+                joints_data["joint_{0}".format(joint_id)] = {"x": x, "y": y}
+
         return joints_data
+
 
     def draw_joints(self, skeletons):
         for skeleton in skeletons:

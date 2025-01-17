@@ -82,6 +82,20 @@ const Playground: React.FC = () => {
     };
   }, []);
 
+//   const addSquareInterval = setInterval(() => {
+// if (!engineRef.current) return; // Ensure engine is initialized
+
+//     const newBall = Bodies.circle(Math.random() * 700, Math.random() * 400, 15, {
+//       restitution: 0.8,
+//       friction: 0.1,
+//       mass: 1,
+//     });
+
+//     setBalls((prevBalls) => {
+//       World.add(engineRef.current.world, newBall); // Add the new ball to the Matter.js world
+//       return [...prevBalls, newBall]; // Add the new ball to the state
+//     });
+//   }, 1000);
   const addBall = () => {
     if (!engineRef.current) return; // Ensure engine is initialized
 
